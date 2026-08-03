@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SECURE PORTAL</title>
+    
+    <style>
+        :root {
+            --bg-deep-space: #02040a;
+            --quantum-cyan: #00f3ff;
+            --neon-amethyst: #b026ff;
+            --accent-red: #ff003c;
+            --text-main: #f1f5f9;
+            --text-muted: #6b7a90;
+            --surface-glass: rgba(10, 15, 25, 0.65);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background-color: var(--bg-deep-space); color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            height: 100dvh; display: flex; flex-direction: column; overflow: hidden; position: relative;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(176, 38, 255, 0.05), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.05), transparent 25%);
+        }
+
+        /* LAYAR BUMI HANGUS (Z-INDEX MUTLAK MAKSIMAL) */
+        #burned-screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; background: #000; z-index: 2147483647; text-align: center; padding: 20px; }
+
+        /* LAYAR PEMBUKA RAHASIA - BERKEDIP ELEGAN */
+        #quantumSplashScreen { position: fixed; inset: 0; z-index: 10000; background: #010205; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; transition: opacity 0.8s ease-out; }
+        .holo-shield { color: var(--quantum-cyan); font-size: 3.5rem; margin-bottom: 24px; text-shadow: 0 0 15px rgba(0,243,255,0.3); opacity: 0.8; }
+        
+        .secret-text {
+            font-family: monospace;
+            color: var(--text-muted);
+            line-height: 1.6;
+            max-width: 320px;
+            letter-spacing: 0.5px;
+            animation: quantumPulse 2.5s infinite alternate;
+        }
+        .secret-title { color: var(--quantum-cyan); font-size: 14px; font-weight: bold; letter-spacing: 2px; margin-bottom: 12px; }
+        
+        @keyframes quantumPulse {
+            0% { opacity: 0.4; text-shadow: 0 0 2px rgba(0,243,255,0.1); }
+            100% { opacity: 1; text-shadow: 0 0 10px rgba(0,243,255,0.4); }
+        }
+
+        /* LAPISAN KEBUTAAN INSTAN */
+        #stealthBlackoutLayer { position: fixed; inset: 0; background: #000; z-index: 999999; display: none; flex-direction: column; justify-content: center; align-items: center; color: #ff003c; font-family: monospace; font-size: 12px; }
+
+        #strobeLayer { position: absolute; inset: 0; background: #fff; z-index: 9998; display: none; }
+        #redStrikeScreen { position: absolute; inset: 0; background: var(--accent-red); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; }
+        .strike-text { font-family: monospace; color: #fff; font-size: 1.5rem; font-weight: bold; text-shadow: 0 0 20px #000; animation: blink 0.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        .overlay-screen { position: absolute; inset: 0; background: rgba(2,4,10,0.9); z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .upload-spinner { width: 45px; height: 45px; border: 2px solid rgba(0,243,255,0.1); border-top-color: var(--quantum-cyan); border-right-color: var(--neon-amethyst); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 16px; box-shadow: 0 0 15px rgba(176,38,255,0.2); }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .media-menu-box { background: rgba(10,15,25,0.9); border: 1px solid rgba(176, 38, 255, 0.3); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; width: 80%; max-width: 300px; box-shadow: 0 10px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(176,38,255,0.05); }
+        .btn-menu-option { background: transparent; border: 1px solid rgba(0,243,255,0.2); color: var(--quantum-cyan); padding: 14px; border-radius: 10px; font-family: monospace; font-size: 12px; font-weight: bold; cursor: pointer; text-align: left; transition: all 0.2s; }
+        .btn-menu-option:active { background: rgba(0, 243, 255, 0.15); box-shadow: 0 0 15px rgba(0,243,255,0.2); }
+        .btn-close-menu { background: transparent; color: var(--accent-red); border: 1px dashed var(--accent-red); padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 4px; font-family: monospace; }
+
+        .cyber-header { background: var(--surface-glass); border-bottom: 1px solid rgba(176, 38, 255, 0.2); padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; z-index: 10; flex-shrink: 0; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        .timer { font-family: monospace; font-size: 15px; font-weight: bold; color: var(--quantum-cyan); text-shadow: 0 0 8px rgba(0,243,255,0.4); }
+        .btn-ping { background: rgba(176, 38, 255, 0.1); border: 1px solid var(--neon-amethyst); color: var(--neon-amethyst); border-radius: 6px; padding: 6px 14px; font-size: 10px; font-weight: bold; cursor: pointer; letter-spacing: 1px; }
+
+        .chat-container { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; z-index: 2; position: relative; scroll-behavior: smooth; }
+        .glitch-anim { animation: glitchRender 0.2s ease-out; }
+        @keyframes glitchRender { 0% { opacity: 0; transform: translateX(-5px) skewX(5deg); filter: hue-rotate(90deg); } 100% { opacity: 1; transform: translateX(0) skewX(0); filter: hue-rotate(0); } }
+
+        .vn-guide { position: absolute; bottom: 65px; left: 50%; transform: translateX(-50%); background: rgba(176, 38, 255, 0.15); border: 1px solid var(--neon-amethyst); color: var(--text-main); font-family: monospace; font-size: 10px; padding: 6px 12px; border-radius: 20px; pointer-events: none; animation: guidePulse 2s infinite; z-index: 20; box-shadow: 0 0 15px rgba(176,38,255,0.3); white-space: nowrap; }
+        @keyframes guidePulse { 0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); } 50% { opacity: 1; transform: translateX(-50%) scale(1.05); } }
+
+        .input-area { background: var(--surface-glass); border-top: 1px solid rgba(0, 243, 255, 0.15); padding: 10px 12px; display: flex; gap: 8px; align-items: center; z-index: 10; flex-shrink: 0; width: 100%; box-shadow: 0 -4px 20px rgba(0,0,0,0.5); position: relative; }
+        
+        .btn-taktis { background: rgba(0,0,0,0.5); border: 1px solid rgba(0,243,255,0.3); color: var(--quantum-cyan); width: 38px; height: 38px; border-radius: 50%; font-size: 16px; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; transition: all 0.2s; }
+        .btn-taktis:active { background: var(--quantum-cyan); color: #000; box-shadow: 0 0 15px rgba(0,243,255,0.5); }
+        
+        .btn-mic { border-color: var(--neon-amethyst); color: var(--neon-amethyst); touch-action: none; }
+        .recording-pulse { animation: recPulse 1s infinite; background: var(--accent-red) !important; color: #fff !important; border-color: var(--accent-red) !important; box-shadow: 0 0 20px rgba(255,0,60,0.8) !important; transform: scale(1.15); }
+        @keyframes recPulse { 0% { transform: scale(1.15); } 50% { transform: scale(1.25); box-shadow: 0 0 30px rgba(255,0,60,1); } 100% { transform: scale(1.15); } }
+
+        .chat-input { flex: 1; min-width: 0; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.05); color: #fff; padding: 12px 14px; border-radius: 20px; outline: none; font-size: 13px; transition: border 0.3s; }
+        .chat-input:focus { border-color: var(--quantum-cyan); background: #000; }
+        
+        .btn-send { background: linear-gradient(135deg, var(--quantum-cyan), #009dff); color: #000; border: none; border-radius: 20px; padding: 0 14px; font-weight: bold; height: 38px; font-size: 11px; flex-shrink: 0; white-space: nowrap; cursor: pointer; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <div id="burned-screen">
+        <svg style="width:64px; height:64px; color:#555; margin-bottom:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+        <h2 style="color: #fff; margin-bottom: 10px; font-family: sans-serif;">DATA HANGUS</h2>
+        <p id="lblBurnReason" style="color: #ef4444; font-family: monospace; font-size: 0.9rem; font-weight:bold;">AKSES DITOLAK ATAU DIHANCURKAN</p>
+    </div>
+
+    <script>
+        (function() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var sessionUrl = urlParams.get('session');
+            var sessionMem = null;
+            
+            // Baca memori lokal. Jika tamu pernah masuk, ID Sesi tersimpan di sini.
+            try { sessionMem = sessionStorage.getItem('active_tactical_room'); } catch(e) {}
+            
+            // Jembatan Detak Jantung
+            window.guestAppAlive = false;
+            
+            function executeKick(reason) {
+                var bs = document.getElementById('burned-screen');
+                var lbl = document.getElementById('lblBurnReason');
+                if (bs) bs.style.display = 'flex';
+                if (lbl && reason) lbl.innerText = reason;
+                try { localStorage.clear(); sessionStorage.clear(); } catch(e) {}
+                setTimeout(function() { window.location.replace('https://www.google.com'); }, 2000);
+            }
+
+            // PERBAIKAN: Jika URL kosong DAN memori kosong, ini murni pengunjung GitHub. Hancurkan.
+            if ((!sessionUrl || sessionUrl.trim() === '') && (!sessionMem || sessionMem.trim() === '')) {
+                executeKick("AKSES DITOLAK ATAU DIHANCURKAN");
+                return; 
+            }
+
+            // Animasi Splash Mutlak (Pasti terbuka)
+            setTimeout(function() {
+                var splash = document.getElementById('quantumSplashScreen');
+                if (splash) {
+                    splash.style.opacity = '0';
+                    setTimeout(function() { splash.style.display = 'none'; }, 800);
+                }
+            }, 3500);
+
+            // PENGAWAS JARINGAN 1 (Peringatan Halus 8 Detik)
+            setTimeout(function() {
+                if (window.guestAppAlive !== true) {
+                    var timerDisplay = document.getElementById('countdownDisplay');
+                    if (timerDisplay) {
+                        timerDisplay.innerText = "[ MENCARI SINYAL... ]";
+                        timerDisplay.style.color = "#ff003c";
+                        timerDisplay.style.fontSize = "11px";
+                    }
+                }
+            }, 8000);
+
+            // PENGAWAS JARINGAN 2 (Kiamat 25 Detik)
+            setTimeout(function() {
+                if (window.guestAppAlive !== true) {
+                    executeKick("KONEKSI GAGAL ATAU DIBLOKIR");
+                }
+            }, 25000);
+        })();
+    </script>
+    <div id="quantumSplashScreen">
+        <div class="holo-shield">🛡️</div>
+        <div class="secret-text">
+            <div class="secret-title">[ PRIVATE PORTAL ]</div>
+            <span style="font-size: 11px;">
+                Sistem ini terenkripsi secara <span style="color:var(--quantum-cyan); font-weight:bold;">NanoTech</span>.<br><br>
+                Portal ini dirahasiakan dan tidak untuk dipublikasikan. Dirancang eksklusif untuk administrasi internal dengan mengutamakan privasi klien.
+            </span>
+        </div>
+    </div>
+
+    <div id="stealthBlackoutLayer">
+        [ MENGAMANKAN VISUAL ]
+    </div>
+
+    <div id="uploadOverlay" class="overlay-screen">
+        <div class="upload-spinner"></div>
+        <div style="font-family: monospace; color: var(--neon-amethyst); font-size: 11px; letter-spacing: 2px;">ENKRIPSI</div>
+    </div>
+
+    <div id="mediaMenuOverlay" class="overlay-screen">
+        <div class="media-menu-box">
+            <div style="font-family: monospace; font-size: 10px; color: var(--text-muted); text-align: center; margin-bottom: 8px;">TRANSMISI MEDIA</div>
+            <button class="btn-menu-option" id="btnOptCamera">📷 KAMERA LOKAL</button>
+            <button class="btn-menu-option" id="btnOptGallery">📁 GALERI TERENKRIPSI</button>
+            <button class="btn-close-menu" id="btnCloseMediaMenu">BATAL</button>
+        </div>
+    </div>
+
+    <div id="strobeLayer"></div>
+    <div id="redStrikeScreen">
+        <i class="strike-text" style="font-size: 4rem; margin-bottom: 16px;">!</i>
+        <div class="strike-text">PELANGGARAN TERDETEKSI.<br>SEKALI LAGI = TERMINASI.</div>
+    </div>
+
+    <header class="cyber-header">
+        <div class="timer" id="countdownDisplay">--:--:--</div>
+        <button class="btn-ping" id="btnPing">PING</button>
+    </header>
+
+    <main class="chat-container" id="chatStream">
+        <div style="text-align:center; font-size:9px; color:var(--neon-amethyst); font-family:monospace; margin-top:8px; letter-spacing:1px;">[ END-TO-END ENCRYPTION ]</div>
+    </main>
+
+    <div id="vnGuide" class="vn-guide">[ TAHAN 🎙️ UNTUK MENGIRIM SUARA ]</div>
+
+    <footer class="input-area">
+        <input type="file" id="guestCameraUpload" style="display:none;" accept="image/*,video/*" capture="environment">
+        <input type="file" id="guestGalleryUpload" style="display:none;" accept="image/*,video/*">
+        
+        <button class="btn-taktis" id="btnAttach">+</button>
+        <button class="btn-taktis" id="btnGeo" style="display: none;" title="Kirim Lokasi Akurat">📍</button>
+        <button class="btn-taktis btn-mic" id="btnVoiceNote" title="Tahan untuk Merekam Suara">🎙️</button>
+        
+        <input type="text" class="chat-input" id="chatInput" placeholder="Ketik pesan..." autocomplete="off">
+        <button class="btn-send" id="btnSend">KIRIM</button>
+    </footer>
+
+    <script type="module" src="./js/guest-app.js"></script>
+</body>
+</html>
