@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <script>
+        (function() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var sessionUrl = urlParams.get('session');
+            var sessionMem = null;
+            try { sessionMem = sessionStorage.getItem('active_tactical_room'); } catch(e) {}
+            
+            if ((!sessionUrl || sessionUrl.trim() === '') && (!sessionMem || sessionMem.trim() === '')) {
+                document.documentElement.innerHTML = ''; 
+                window.location.replace('https://www.google.com');
+            }
+        })();
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Google</title>
+    <link rel="icon" href="https://www.google.com/favicon.ico">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;400;700&family=Rajdhani:wght@300;500;700&display=swap');
+
+        :root {
+            --bg-void: #040508;
+            --cyan-glow: #00E5FF;
+            --red-alert: #FF003C;
+            --yellow-warn: #FFD600;
+            --glass-bg: rgba(10, 15, 25, 0.45);
+            --glass-border: rgba(0, 229, 255, 0.15);
+            --text-primary: #E2E8F0;
+            --text-muted: #64748B;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background-color: var(--bg-void); color: var(--text-primary);
+            font-family: 'Rajdhani', sans-serif;
+            height: 100dvh; display: flex; flex-direction: column; overflow: hidden; position: relative;
+            background-image: 
+                linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-position: center center;
+        }
+
+        /* FASE 1: HELLFIRE BREACH SCREEN */
+        #burned-screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; background: #000; z-index: 2147483647; padding: 20px; font-family: 'JetBrains Mono', monospace; }
+        
+        .hellfire-container {
+            border: 1px dashed var(--red-alert);
+            border-radius: 12px;
+            padding: 30px 20px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: inset 0 0 30px rgba(255, 0, 60, 0.1);
+            animation: pulseBorder 2s infinite alternate;
+        }
+        @keyframes pulseBorder { 0% { border-color: rgba(255,0,60,0.5); box-shadow: inset 0 0 10px rgba(255,0,60,0.05); } 100% { border-color: var(--red-alert); box-shadow: inset 0 0 40px rgba(255,0,60,0.2); } }
+
+        .biohazard-icon { width: 64px; height: 64px; fill: var(--yellow-warn); margin-bottom: 20px; filter: drop-shadow(0 0 10px rgba(255, 214, 0, 0.5)); }
+        .hellfire-title { color: #fff; font-size: 1.2rem; font-weight: 700; letter-spacing: 2px; margin-bottom: 15px; }
+        .hellfire-text { color: var(--text-muted); font-size: 0.75rem; line-height: 1.8; margin-bottom: 25px; }
+        
+        .hellfire-data-box {
+            border: 1px solid var(--red-alert);
+            background: rgba(255, 0, 60, 0.05);
+            padding: 15px;
+            text-align: left;
+            font-size: 0.7rem;
+            line-height: 1.8;
+        }
+        .data-row { color: #fff; }
+        .data-label { color: var(--red-alert); font-weight: bold; }
+        .data-yellow { color: var(--yellow-warn); }
+        
+        #lblBurnReason { font-style: italic; color: var(--yellow-warn); font-size: 0.7rem; margin-top: 20px; display: block; }
+
+        /* FASE 1: SPLASH SCREEN VVIP */
+        #quantumSplashScreen { position: fixed; inset: 0; z-index: 10000; background: var(--bg-void); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; transition: opacity 1s cubic-bezier(0.8, 0, 0.2, 1); }
+        
+        .aegis-shield { color: var(--cyan-glow); font-size: 2.5rem; margin-bottom: 30px; filter: drop-shadow(0 0 20px rgba(0, 229, 255, 0.4)); animation: shieldFloat 3s ease-in-out infinite; }
+        @keyframes shieldFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        
+        .secret-text { font-family: 'Rajdhani', sans-serif; color: var(--text-primary); max-width: 400px; }
+        .secret-title { font-family: 'JetBrains Mono', monospace; color: var(--cyan-glow); font-size: 14px; font-weight: bold; letter-spacing: 4px; margin-bottom: 20px; }
+        .secret-paragraph { font-size: 13px; line-height: 1.8; color: var(--text-muted); font-weight: 300; margin-bottom: 15px; text-align: justify; }
+        .secret-footer { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--cyan-glow); margin-top: 30px; letter-spacing: 1px; animation: blinkFast 1s infinite; }
+        @keyframes blinkFast { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        /* FASE 1: MICRO TOAST NOTIFICATION */
+        #tactical-toast {
+            position: fixed; top: -50px; left: 50%; transform: translateX(-50%);
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            color: var(--cyan-glow); padding: 6px 14px; border-radius: 50px;
+            font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: bold;
+            letter-spacing: 1px; z-index: 9999999;
+            transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 229, 255, 0.1); pointer-events: none; white-space: nowrap;
+            display: flex; align-items: center; gap: 8px;
+        }
+        #tactical-toast::before { content: ''; display: block; width: 6px; height: 6px; background: var(--cyan-glow); border-radius: 50%; animation: blinkFast 1s infinite; }
+        .toast-show { top: 15px !important; }
+        .toast-error { border-color: var(--red-alert) !important; color: var(--red-alert) !important; box-shadow: 0 4px 20px rgba(255, 0, 60, 0.2) !important; }
+        .toast-error::before { background: var(--red-alert); }
+
+        /* OVERLAYS & ALERTS */
+        #stealthBlackoutLayer { position: fixed; inset: 0; background: #000; z-index: 999999; display: none; flex-direction: column; justify-content: center; align-items: center; color: var(--red-alert); font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 2px; }
+        #strobeLayer { position: absolute; inset: 0; background: #fff; z-index: 9998; display: none; }
+        #redStrikeScreen { position: absolute; inset: 0; background: var(--red-alert); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; }
+        
+        .overlay-screen { position: absolute; inset: 0; background: rgba(4,5,8,0.85); z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
+        .upload-spinner { width: 40px; height: 40px; border: 1px solid rgba(0,229,255,0.1); border-top-color: var(--cyan-glow); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* MEDIA MENU */
+        .media-menu-box { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px; width: 85%; max-width: 320px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); backdrop-filter: blur(10px); }
+        .btn-menu-option { background: transparent; border: 1px solid rgba(0,229,255,0.1); color: var(--text-primary); padding: 14px; border-radius: 8px; font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; text-align: left; transition: all 0.3s; display: flex; align-items: center; gap: 12px; }
+        .btn-menu-option svg { width: 18px; height: 18px; stroke: var(--cyan-glow); fill: none; stroke-width: 1.5; }
+        .btn-menu-option:active { background: rgba(0, 229, 255, 0.1); border-color: var(--cyan-glow); }
+        .btn-close-menu { background: transparent; color: var(--red-alert); border: 1px dashed rgba(255,0,60,0.3); padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+        /* HEADER */
+        .cyber-header { background: linear-gradient(to bottom, rgba(4,5,8,0.9), transparent); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 10; flex-shrink: 0; }
+        .timer { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: bold; color: var(--text-primary); letter-spacing: 1px; }
+        .timer span { color: var(--cyan-glow); }
+        .btn-ping { background: transparent; border: 1px solid rgba(0,229,255,0.3); color: var(--cyan-glow); border-radius: 4px; padding: 6px 12px; font-size: 10px; font-family: 'JetBrains Mono', monospace; cursor: pointer; letter-spacing: 2px; transition: all 0.3s; }
+        .btn-ping:active { background: var(--cyan-glow); color: #000; }
+
+        /* CHAT CONTAINER & BUBBLES (HUD STYLE) */
+        .chat-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; z-index: 2; position: relative; scroll-behavior: smooth; }
+        
+        /* CSS Override untuk Guest App (Fase 2 Prep) */
+        div[id^="msg-"] {
+            background: var(--glass-bg) !important;
+            border: 1px solid var(--glass-border) !important;
+            backdrop-filter: blur(5px);
+            border-radius: 4px !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            padding: 14px 18px !important;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        /* GUEST: Aksen Kanan */
+        div[id^="msg-"][style*="flex-end"] {
+            border-right: 2px solid var(--cyan-glow) !important;
+            background: linear-gradient(90deg, transparent, rgba(0,229,255,0.05)) !important;
+        }
+        /* ADMIN: Aksen Kiri */
+        div[id^="msg-"][style*="flex-start"] {
+            border-left: 2px solid var(--red-alert) !important;
+            background: linear-gradient(-90deg, transparent, rgba(255,0,60,0.05)) !important;
+            border-color: rgba(255,0,60,0.15) !important;
+        }
+
+        .vn-guide { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 9px; padding: 6px 14px; border-radius: 4px; pointer-events: none; animation: guidePulse 2.5s infinite; z-index: 20; backdrop-filter: blur(5px); }
+        @keyframes guidePulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; border-color: var(--cyan-glow); color: var(--cyan-glow); } }
+
+        /* INPUT AREA - VVIP REDESIGN */
+        .input-area { background: rgba(4,5,8,0.8); border-top: 1px solid rgba(255,255,255,0.05); padding: 12px 16px; display: flex; gap: 10px; align-items: center; z-index: 10; flex-shrink: 0; width: 100%; backdrop-filter: blur(10px); padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+        
+        .btn-taktis { 
+            background: transparent; border: 1px solid rgba(255,255,255,0.1); 
+            width: 40px; height: 40px; border-radius: 8px; 
+            display: flex; justify-content: center; align-items: center; 
+            cursor: pointer; flex-shrink: 0; transition: all 0.2s; 
+        }
+        .btn-taktis svg { width: 18px; height: 18px; stroke: var(--text-muted); stroke-width: 1.5; fill: none; transition: stroke 0.3s; }
+        .btn-taktis:active { border-color: var(--cyan-glow); background: rgba(0,229,255,0.1); }
+        .btn-taktis:active svg { stroke: var(--cyan-glow); }
+        
+        .btn-mic { border-color: rgba(255,0,60,0.2); }
+        .btn-mic svg { stroke: var(--red-alert); }
+        
+        .recording-pulse { animation: recPulse 1s infinite; background: rgba(255,0,60,0.1) !important; border-color: var(--red-alert) !important; }
+        @keyframes recPulse { 0%, 100% { box-shadow: 0 0 10px rgba(255,0,60,0.2); } 50% { box-shadow: 0 0 25px rgba(255,0,60,0.6); } }
+
+        .chat-input { flex: 1; min-width: 0; background: transparent; border: none; color: var(--text-primary); padding: 10px; font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 500; }
+        .chat-input::placeholder { color: rgba(255,255,255,0.2); font-weight: 300; }
+        
+        .btn-send { background: transparent; color: var(--cyan-glow); border: none; font-family: 'JetBrains Mono', monospace; font-weight: bold; font-size: 11px; padding: 0 8px; cursor: pointer; letter-spacing: 1px; transition: text-shadow 0.3s; }
+        .btn-send:active { text-shadow: 0 0 10px var(--cyan-glow); }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <div id="tactical-toast">SISTEM STANDBY</div>
+
+    <!-- FASE 1: HELLFIRE BREACH SCREEN -->
+    <div id="burned-screen">
+        <div class="hellfire-container">
+            <svg class="biohazard-icon" viewBox="0 0 24 24">
+                <path d="M12 2L12 6M12 22L12 18M3 7L6 9M21 7L18 9M4 19L7 17M20 19L17 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                <path d="M12 9C10.3431 9 9 10.3431 9 12C9 12.6074 9.18047 13.1727 9.49021 13.6459M15 12C15 10.3431 13.6569 9 12 9M12 15C13.6569 15 15 13.6569 15 12C15 11.3926 14.8195 10.8273 14.5098 10.3541M9.49021 13.6459L6 16.5M14.5098 10.3541L18 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <div class="hellfire-title">HELLFIRE BREACH<br>SIGNALS ACTIVATED</div>
+            <div class="hellfire-text">
+                PELANGGARAN PROTOKOL SIBER TERDETEKSI.<br>
+                ALAMAT IP DAN GEOLOKASI ANDA SEDANG DIKIRIM KE KANBAN KOKPIT UTAMA.<br>
+                MEMORI TERMINAL ANDA AKAN DIHANCURKAN DALAM 3 DETIK.
+            </div>
+            
+            <div class="hellfire-data-box">
+                <div class="data-row"><span class="data-label">INTRUDER IP:</span> <span id="mockIp">202.58.78.162</span></div>
+                <div class="data-row"><span class="data-label">VIOLATION CORE:</span> <span class="data-yellow">DOM_MUTATION_DEFACE_ATTEMPT</span></div>
+                <div class="data-row"><span class="data-label">HARDWARE SYSTEM:</span> Linux armv8l (8 Cores / RAM: 8 GB)</div>
+                <div class="data-row"><span class="data-label">DISPLAY RES:</span> 360 x 806</div>
+            </div>
+
+            <span id="lblBurnReason">Menghancurkan rekam jejak tab dalam 1 detik...</span>
+        </div>
+    </div>
+
+    <!-- FASE 1: SPLASH SCREEN VVIP -->
+    <div id="quantumSplashScreen">
+        <svg class="aegis-shield" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            <path d="M12 8v4"></path>
+            <path d="M12 16h.01"></path>
+        </svg>
+        <div class="secret-text">
+            <div class="secret-title">[ AEGIS-PRIME : OMEGA CLEARANCE REQUIRED ]</div>
+            <div class="secret-paragraph">
+                Menginisiasi jembatan terenkripsi<br><br>
+                Protokol ini diisolasi secara mutlak dari matriks publik. Transmisi Anda saat ini sedang dialihkan melalui terowongan proksi yang terenkripsi .<br><br>
+                Akses diberikan eksklusif untuk Entitas VVIP. Segala bentuk intersepsi, perekaman layar, atau injeksi data akan memicu protokol pemusnahan otonom (Scorched Earth) tanpa peringatan.
+            </div>
+            <div class="secret-footer">[ MEMVERIFIKASI STATUS KEAMANAN JARINGAN ]</div>
+        </div>
+    </div>
+
+    <div id="stealthBlackoutLayer">
+        [ MENGAMANKAN VISUAL ]
+    </div>
+
+    <div id="uploadOverlay" class="overlay-screen">
+        <div class="upload-spinner"></div>
+        <div style="font-family: 'JetBrains Mono', monospace; color: var(--cyan-glow); font-size: 11px; letter-spacing: 4px;">ENKRIPSI</div>
+    </div>
+
+    <div id="mediaMenuOverlay" class="overlay-screen">
+        <div class="media-menu-box">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); text-align: center; margin-bottom: 5px; letter-spacing: 2px;">TRANSMISI MEDIA</div>
+            <button class="btn-menu-option" id="btnOptCamera">
+                <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                Kamera Taktis
+            </button>
+            <button class="btn-menu-option" id="btnOptGallery">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                Galeri Terenkripsi
+            </button>
+            <button class="btn-close-menu" id="btnCloseMediaMenu">BATAL</button>
+        </div>
+    </div>
+
+    <div id="strobeLayer"></div>
+    <div id="redStrikeScreen">
+        <svg style="width:100px; height:100px; stroke:#fff; fill:none; margin-bottom:20px; animation: blinkFast 0.5s infinite;" viewBox="0 0 24 24" stroke-width="1"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        <div style="font-family: 'JetBrains Mono', monospace; color: #fff; font-size: 1.2rem; font-weight: bold; letter-spacing: 1px; animation: blinkFast 0.5s infinite;">PELANGGARAN TERDETEKSI.<br>SEKALI LAGI = TERMINASI.</div>
+    </div>
+
+    <header class="cyber-header">
+        <div class="timer" id="countdownDisplay">SINKRONISASI<span>...</span></div>
+        <button class="btn-ping" id="btnPing">PING</button>
+    </header>
+
+    <main class="chat-container" id="chatStream">
+        <div style="text-align:center; font-size:9px; color:var(--text-muted); font-family:'JetBrains Mono', monospace; margin-top:8px; letter-spacing:2px;">[ SECURE END-TO-END TUNNEL ]</div>
+    </main>
+
+    <div id="vnGuide" class="vn-guide">[ TAHAN MIC UNTUK MENGIRIM SUARA ]</div>
+
+    <footer class="input-area">
+        <input type="file" id="guestCameraUpload" style="display:none;" accept="image/*" capture="camera">
+        <input type="file" id="guestGalleryUpload" style="display:none;" accept="image/*,video/*">
+        
+        <button class="btn-taktis" id="btnAttach" title="Transmisi Media">
+            <svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+        </button>
+        <button class="btn-taktis" id="btnGeo" style="display: none;" title="Kunci Koordinat">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v4M12 18v4M2 12h4M18 12h4"></path></svg>
+        </button>
+        <button class="btn-taktis btn-mic" id="btnVoiceNote" title="Transmisi Suara Siluman">
+            <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+        </button>
+        
+        <input type="text" class="chat-input" id="chatInput" placeholder="Ketik transmisi..." autocomplete="off">
+        <button class="btn-send" id="btnSend">KIRIM</button>
+    </footer>
+
+    <script>
+        // Scripts moved directly from original index.html but cleaned up
+        window.forceDownload = async function(url, btnElement) {
+            try {
+                btnElement.innerText = "[ PROSES... ]";
+                btnElement.style.opacity = "0.5";
+                const response = await fetch(url);
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = blobUrl;
+                a.download = `AEGIS_MEDIA_${Date.now()}`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(blobUrl);
+                document.body.removeChild(a);
+                btnElement.innerText = "[ UNDUH MEDIA ]";
+                btnElement.style.opacity = "1";
+            } catch (e) {
+                btnElement.innerText = "[ GAGAL ]";
+            }
+        };
+
+        (function() {
+            window.guestAppAlive = false;
+            
+            function executeKick(reason) {
+                var bs = document.getElementById('burned-screen');
+                var lbl = document.getElementById('lblBurnReason');
+                if (bs) bs.style.display = 'flex';
+                if (lbl && reason) lbl.innerText = reason;
+                try { localStorage.clear(); sessionStorage.clear(); } catch(e) {}
+                setTimeout(function() { window.location.replace('https://www.google.com'); }, 2500);
+            }
+
+            setTimeout(function() {
+                var splash = document.getElementById('quantumSplashScreen');
+                if (splash) {
+                    splash.style.opacity = '0';
+                    setTimeout(function() { splash.style.display = 'none'; }, 1000);
+                }
+            }, 4000);
+
+            setTimeout(function() {
+                if (window.guestAppAlive !== true) {
+                    var timerDisplay = document.getElementById('countdownDisplay');
+                    if (timerDisplay) {
+                        timerDisplay.innerHTML = "<span style='color:var(--red-alert)'>MENCARI SINYAL...</span>";
+                    }
+                }
+            }, 8000);
+
+            setTimeout(function() {
+                if (window.guestAppAlive !== true) {
+                    executeKick("KONEKSI GAGAL ATAU DIBLOKIR");
+                }
+            }, 25000);
+        })();
+    </script>
+
+    <script type="module" src="./js/guest-app.js"></script>
+    
+    <script>
+        setTimeout(function() {
+            var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('session') || sessionStorage.getItem('active_tactical_room')) {
+                document.title = "AEGIS SECURE";
+            }
+        }, 500);
+    </script>
+</body>
+</html>
